@@ -21,9 +21,18 @@ public class WeatherApiClient(HttpClient httpClient)
 
         return forecasts?.ToArray() ?? [];
     }
+
+    public async Task<ServicesStatusResult?> GetServicesStatusAsync(CancellationToken cancellationToken = default)
+    {
+        return await httpClient.GetFromJsonAsync<ServicesStatusResult>("/azure-check", cancellationToken);
+    }
 }
 
 public record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
+
+public record ServiceStatus(bool Configured, bool Connected, string Message);
+
+public record ServicesStatusResult(ServiceStatus AzureStorage, ServiceStatus AzureKeyVault, ServiceStatus Database);
