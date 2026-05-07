@@ -24,7 +24,7 @@ public class WeatherApiClient(HttpClient httpClient)
 
     public async Task<ServicesStatusResult?> GetServicesStatusAsync(CancellationToken cancellationToken = default)
     {
-        return await httpClient.GetFromJsonAsync<ServicesStatusResult>("/services-status", cancellationToken);
+        return await httpClient.GetFromJsonAsync<ServicesStatusResult>("/azure-check", cancellationToken);
     }
 }
 

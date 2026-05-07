@@ -58,7 +58,7 @@ app.MapGet("/weatherforecast", () =>
 })
 .WithName("GetWeatherForecast");
 
-app.MapGet("/services-status", async (
+app.MapGet("/azure-check", async (
     BlobServiceClient? blobServiceClient,
     SecretClient? secretClient,
     ILogger<Program> logger) =>
@@ -69,7 +69,7 @@ app.MapGet("/services-status", async (
 
     return Results.Ok(new ServicesStatusResult(storage, keyVault, database));
 })
-.WithName("ServicesStatus")
+.WithName("AzureCheck")
 .WithSummary("Check Azure services connectivity")
 .WithDescription("Returns connectivity status for Azure Storage, Azure Key Vault, and the database. Config is read from environment variables (Azure__Storage__Uri, Azure__KeyVault__Uri, Database__ConnectionString) with appsettings.json as fallback.");
 
