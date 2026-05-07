@@ -21,9 +21,16 @@ public class WeatherApiClient(HttpClient httpClient)
 
         return forecasts?.ToArray() ?? [];
     }
+
+    public async Task<StorageCheckResult?> GetStorageStatusAsync(CancellationToken cancellationToken = default)
+    {
+        return await httpClient.GetFromJsonAsync<StorageCheckResult>("/storage-check", cancellationToken);
+    }
 }
 
 public record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
+
+public record StorageCheckResult(bool Success, string Message);

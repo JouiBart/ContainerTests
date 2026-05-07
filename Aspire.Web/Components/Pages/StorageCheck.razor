@@ -1,0 +1,49 @@
+@page "/storage-check"
+@attribute [StreamRendering(true)]
+
+@inject WeatherApiClient WeatherApi
+
+<PageTitle>Storage Check</PageTitle>
+
+<h1>Azure Storage Check</h1>
+
+<p>This page shows whether the API can connect to Azure Storage using Managed Identity.</p>
+
+@if (isLoading)
+{
+    <p><em>Loading...</em></p>
+}
+else if (errorMessage is not null)
+{
+    <div class="alert alert-warning" role="alert">
+        <strong>Unable to retrieve status:</strong> @errorMessage
+    </div>
+}
+else if (result is not null)
+{
+    <div class="alert @(result.Success ? "alert-success" : "alert-danger")" role="alert">
+        <strong>@(result.Success ? "Connected" : "Not connected")</strong> &mdash; @result.Message
+    </div>
+}
+
+@code {
+    private bool isLoading = true;
+    private StorageCheckResult? result;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            result = await WeatherApi.GetStorageStatusAsync();
+        }
+        catch (Exception)
+        {
+            errorMessage = "Failed to contact the API. Please try again later.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
