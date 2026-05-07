@@ -22,9 +22,9 @@ public class WeatherApiClient(HttpClient httpClient)
         return forecasts?.ToArray() ?? [];
     }
 
-    public async Task<StorageCheckResult?> GetStorageStatusAsync(CancellationToken cancellationToken = default)
+    public async Task<ServicesStatusResult?> GetServicesStatusAsync(CancellationToken cancellationToken = default)
     {
-        return await httpClient.GetFromJsonAsync<StorageCheckResult>("/storage-check", cancellationToken);
+        return await httpClient.GetFromJsonAsync<ServicesStatusResult>("/services-status", cancellationToken);
     }
 }
 
@@ -33,4 +33,6 @@ public record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
 
-public record StorageCheckResult(bool Success, string Message);
+public record ServiceStatus(bool Configured, bool Connected, string Message);
+
+public record ServicesStatusResult(ServiceStatus AzureStorage, ServiceStatus AzureKeyVault, ServiceStatus Database);

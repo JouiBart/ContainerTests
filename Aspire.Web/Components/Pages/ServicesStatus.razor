@@ -1,0 +1,95 @@
+@page "/services-status"
+@attribute [StreamRendering(true)]
+
+@inject WeatherApiClient WeatherApi
+@inject ILogger<ServicesStatus> Logger
+
+<PageTitle>Services Status</PageTitle>
+
+<h1>Azure Services Status</h1>
+
+<p>Connection status for services configured via environment variables (<code>Azure__Storage__Uri</code>, <code>Azure__KeyVault__Uri</code>, <code>Database__ConnectionString</code>).</p>
+
+@if (isLoading)
+{
+    <p><em>Loading...</em></p>
+}
+else if (errorMessage is not null)
+{
+    <div class="alert alert-warning" role="alert">
+        <strong>Unable to retrieve status:</strong> @errorMessage
+    </div>
+}
+else if (result is not null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Service</th>
+                <th>Configured</th>
+                <th>Status</th>
+                <th>Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            @ServiceRow("Azure Storage", result.AzureStorage)
+            @ServiceRow("Azure Key Vault", result.AzureKeyVault)
+            @ServiceRow("Database", result.Database)
+        </tbody>
+    </table>
+}
+
+@code {
+    private bool isLoading = true;
+    private ServicesStatusResult? result;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            result = await WeatherApi.GetServicesStatusAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to retrieve services status from the API.");
+            errorMessage = "Failed to contact the API. Please try again later.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private RenderFragment ServiceRow(string name, ServiceStatus status) => __builder =>
+    {
+        <tr>
+            <td>@name</td>
+            <td>
+                @if (status.Configured)
+                {
+                    <span class="badge bg-secondary">Yes</span>
+                }
+                else
+                {
+                    <span class="badge bg-light text-dark">No</span>
+                }
+            </td>
+            <td>
+                @if (!status.Configured)
+                {
+                    <span class="badge bg-secondary">Not set up</span>
+                }
+                else if (status.Connected)
+                {
+                    <span class="badge bg-success">Connected</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Failed</span>
+                }
+            </td>
+            <td>@status.Message</td>
+        </tr>
+    };
+}
