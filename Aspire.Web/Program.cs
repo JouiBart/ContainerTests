@@ -1,5 +1,6 @@
 using Aspire.Web;
 using Aspire.Web.Components;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,12 +42,15 @@ app.MapRazorComponents<App>()
 app.MapDefaultEndpoints();
 
 // Liveness probe
-app.MapHealthChecks("/healtz", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+app.MapHealthChecks("/healthz", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
 {
     Predicate = r => r.Tags.Contains("live")
 });
 
 // Readiness probe
-app.MapHealthChecks("/ready");
+app.MapHealthChecks("/ready", new HealthCheckOptions
+{
+    Predicate = r => r.Tags.Contains("ready")
+});
 
 app.Run();
