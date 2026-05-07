@@ -1,6 +1,7 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Blobs;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -59,9 +60,9 @@ app.MapGet("/weatherforecast", () =>
 .WithName("GetWeatherForecast");
 
 app.MapGet("/azure-check", async (
-    BlobServiceClient? blobServiceClient,
-    SecretClient? secretClient,
-    ILogger<Program> logger) =>
+    [FromServices] BlobServiceClient? blobServiceClient,
+    [FromServices] SecretClient? secretClient,
+    [FromServices] ILogger<Program> logger) =>
 {
     var storage = await CheckStorageAsync(blobServiceClient, storageUri, logger);
     var keyVault = await CheckKeyVaultAsync(secretClient, keyVaultUri, logger);

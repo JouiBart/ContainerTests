@@ -1,4 +1,4 @@
-<Project Sdk="Aspire.AppHost.Sdk/13.1.0">
+<Project Sdk="Aspire.AppHost.Sdk/13.2.4">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,6 +7,10 @@
     <Nullable>enable</Nullable>
     <UserSecretsId>d0f7ef31-3003-4104-a7af-99b6ecae4324</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting" Version="13.2.4" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Aspire.ApiService\Aspire.ApiService.csproj" />
