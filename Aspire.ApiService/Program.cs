@@ -1,6 +1,7 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Blobs;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
@@ -77,13 +78,16 @@ app.MapGet("/azure-check", async (
 app.MapDefaultEndpoints();
 
 // Liveness probe
-app.MapHealthChecks("/healtz", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+app.MapHealthChecks("/healthz", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
 {
     Predicate = r => r.Tags.Contains("live")
 });
 
 // Readiness probe
-app.MapHealthChecks("/ready");
+app.MapHealthChecks("/ready", new HealthCheckOptions
+{
+    Predicate = r => r.Tags.Contains("ready")
+});
 
 app.Run();
 
