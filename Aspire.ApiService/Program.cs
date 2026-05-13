@@ -16,6 +16,9 @@ builder.Services.AddProblemDetails();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+
+
+
 // Config values are read from environment variables (e.g. Azure__Storage__Uri in AKS)
 // with fallback to appsettings.json for local development.
 var storageUri = builder.Configuration["Azure:Storage:Uri"];
@@ -98,7 +101,8 @@ static async Task<ServiceStatus> CheckStorageAsync(BlobServiceClient? client, st
 
     try
     {
-        await client.GetPropertiesAsync();
+        var containerClient = client.GetBlobContainerClient("test-container");
+        await containerClient.CreateIfNotExistsAsync();
         return new ServiceStatus(true, true, "Connection succeeded.");
     }
     catch (Exception ex)
